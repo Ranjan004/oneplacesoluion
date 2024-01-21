@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+    <script src="https://cdn.jsdelivr.net/jszip/3.1.5/jszip.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
+    <style>
+        .header {
+            display: block;
+        }
+        
+        input {
+            width: 380px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <header role="banner">
+            <h1>Admin Panel</h1>
+            <ul class="utilities">
+                <br>
+                <li class="users"><a href="signin.html">Create new user</a></li>
+                <li class="logout warn"><a href="index.html" id="logoutLink">Log Out</a></li>
+                <button onclick="exportToExcel()">Export to Excel</button>
+
+            </ul>
+        </header>
+    </div>
+
+    <div id="listingsContainer"></div>
+
+    <script>
+        // Retrieve the access_token from sessionStorage
+        const access_token = sessionStorage.getItem('access_token');
+
+        // Initialize listingsArray
+        let listingsArray = [];
+
+        function deleteUser(userId) {
+            const deleteStatusUrl = `https://oneplacesolution.in/api/listing/delete/${userId}`;
+            const deleteStatusHeaders = new Headers();
+            deleteStatusHeaders.append("Content-Type", "application/json");
+            deleteStatusHeaders.append("Authorization", `Bearer ${access_token}`);
+
+            const deleteStatusOptions = {
+                method: 'DELETE',
+                headers: deleteStatusHeaders,
+                redirect: 'follow'
+            };
+
+            fetch(deleteStatusUrl, deleteStatusOptions)
+                .then(response => response.text())
+                .then(result => {
+                    alert('User Deleted Successfully');
+                    removeUserFromDOM(userId);
+                    // Check if userData and userData.listing are defined
+                    if (userData && userData.listing) {
+                        // Remove the deleted user from listingsArray
+                        listingsArray = userData.listing.filter(listing => listing._id !== userId);
+
+                        // Update listingsArray in sessionStorage
+                        sessionStorage.setItem('listingsData', JSON.stringify({
+                            message: 'success',
+                            data: {
+                                ...userData,
+                                listing: listingsArray
+                            }
+                        }));
+
+                        // Remove the deleted user from the DOM
+                        const deletedUserElement = document.getElementById(`user-${userId}`);
+                        if (deletedUserElement) {
+                            deletedUserElement.remove();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error deleting user:', error));
+        }
+
+
+
+        const listingsData = JSON.parse(sessionStorage.getItem('listingsData'));
+
+        const listingsContainer = document.getElementById('listingsContainer');
+
+        if (listingsData && listingsData.message === 'sucess' && listingsData.data) {
+            const userData = listingsData.data;
+
+            // Display user information
+            const userDataElement = document.createElement('div');
+            userDataElement.innerHTML = `
+                <div class="list">
+                <p><strong>Email:</strong> ${userData.email}</p>
+                <input type="search" id="myInput" onkeyup="searchFun();" placeholder="Search....">
+                </div>
+            `;
+            listingsContainer.appendChild(userDataElement);
+
+            // Display listing array with images
+            const listingsArray = userData.listing;
+
+            if (listingsArray && Array.isArray(listingsArray) && listingsArray.length > 0) {
+                const listingsList = document.createElement('ul');
+                listingsArray.forEach((listing, index) => {
+                            const listingItem = document.createElement('li');
+                            listingItem.innerHTML = `
+                           <div class="listing-u">
+                            <div class="btn"><p><strong># ${index + 1}</strong></p>
+                            <button onclick="deleteUser('${listing._id}')">Delete User</button></div>
+                            <p class="para"><strong>User id:</strong> <span class="data">${listing.listingId}</span></p>
+                        <p><strong>Comment:</strong> ${listing.comment}</p>
+                        <p><strong>Images</strong></p>
+                        <ul class="img-list">
+                            ${listing.imageUrls.map((imageUrl, imgIndex) => `<li><img src="${imageUrl}" alt="Listing Image ${imgIndex + 1}"></li>`).join('')}
+                        </ul>
+                        </div>
+                    `;
+                    listingsList.appendChild(listingItem);
+                });
+                listingsContainer.appendChild(listingsList);
+            } else {
+                listingsContainer.innerHTML += '<p>No listings available.</p>';
+            }
+        } else {
+            listingsContainer.innerHTML = '<p>No user data available.</p>';
+        }
+
+        function removeUserFromDOM(userId) {
+            // Find the closest parent 'li' element and hide it
+            var listItem = document.querySelector('li:is(:has(button[onclick="deleteUser(\'' + userId + '\')"])');
+            if (listItem) {
+                listItem.remove();
+            }
+        }
+
+
+        function searchFun() {
+            let field = document.getElementById('myInput').value.toLowerCase();
+            let dataF = document.getElementById('listingsContainer')
+            let li = dataF.getElementsByClassName('para');
+
+            let dataList = dataF.getElementsByClassName('listing-u')
+
+            console.log(dataList);
+            for (let i = 0; i < li.length; i++) {
+                let p = li[i].getElementsByClassName('data')[0];
+                if (p) {
+                    let text = p.textContent || p.innerHTML;
+                    if (text.indexOf(field) > -1) {
+                        console.log(text.substring())
+                        dataList[i].style.display = "";
+                    }
+                    else {
+                        dataList[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+    
+       let sessionData = sessionStorage.getItem('listingsData');
+
+
+       
+       function exportToExcel() {
+        const jsonData = JSON.parse(sessionData);
+
+        if (jsonData && jsonData.data && jsonData.data.listing) {
+            const listingsArray = jsonData.data.listing;
+
+            if (listingsArray.length > 0) {
+                // Create a new array with modified structure for Excel
+                const excelData = listingsArray.map(listing => {
+                    return {
+                        'Created User Email': jsonData.data.email,
+                        'Listing ID': listing.listingId,
+                        'Comment': listing.comment,
+                        'Image URLs': listing.imageUrls.join(', '), 
+                    };
+                });
+
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Listings');
+                XLSX.writeFile(workbook, 'listings.xlsx');
+            } else {
+                alert('No data available to export.');
+            }
+        } else {
+            alert('No valid data available to export.');
+        }
+    }
+    </script>
+</body>
+
+</html>
