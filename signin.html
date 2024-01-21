@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Signup</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <header role="banner">
+            <h1>Admin Panel</h1>
+            <ul class="utilities">
+                <br>
+                <li class="users"><a href="signin.html">Create new user</a></li>
+                <li class="logout warn"><a href="">Log Out</a></li>
+            </ul>
+        </header>
+    </div>
+
+    <div class="full">
+        <div class="login-card">
+            <h1>Create New User</h1>
+            <form id="signupForm">
+                <input type="email" id="email" name="email" required placeholder="Enter email">
+                <input type="password" id="password" name="password" required placeholder="Enter password">
+                <button type="button" onclick="signup()">Sign Up</button>
+            </form>
+            <p class="top-mar">Already have an account? &nbsp<a href="index.html">Login</a>.</p>
+        </div>
+    </div>
+
+
+    <script>
+        function signup() {
+            // Get user input
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            // Validate email and password (client-side validation)
+            if (!isValidEmail(email)) {
+                alert("Invalid email address");
+                return;
+            }
+
+            // Perform signup (send data to the server)
+            sendSignupData(email, password);
+        }
+
+        function isValidEmail(email) {
+            // Basic email validation
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function sendSignupData(email, password) {
+            fetch('https://oneplacesolution.in/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the server response
+                    console.log(data);
+                    alert("Signup successful!");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Signup failed. Please try again.");
+                });
+        }
+    </script>
+</body>
+
+</html>

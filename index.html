@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <header role="banner">
+            <h1>Admin Panel</h1>
+            <ul class="utilities">
+                <br>
+                <li class="users"><a href="signin.html">Create new user</a></li>
+                <li class="logout warn"><a href="index.html" id="logoutLink">Log Out</a></li>
+            </ul>
+        </header>
+    </div>
+
+
+
+    <div class="full">
+        <div class="login-card">
+            <h1>Login to Dashboard</h1>
+            <form id="loginForm">
+                <input type="email" id="email" name="email" required placeholder="Enter email">
+                <input type="password" id="password" name="password" required placeholder="Enter password">
+                <button type="button" onclick="submitLoginForm()">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Table to display user data -->
+        <table id="userDataTable">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <!--<th>Listings</th>-->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- User data will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <!-- <span class="close" onclick="closeModal()">&times;</span> -->
+        </div>
+    </div>
+    <script type="text/javascript" src="script.js"></script>
+</body>
+
+</html>
