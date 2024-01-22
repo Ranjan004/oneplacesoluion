@@ -7,7 +7,7 @@ function submitLoginForm() {
     container.classList.add('show')
     full.classList.add('hide')
     header.classList.add('show')
-    const loginUrl = 'https://oneplacesolution.in/api/auth/signin';
+    const loginUrl = 'https://api.oneplacesolution.in/api/auth/signin';
 
     // Get values from the form
     const email = document.getElementById('email').value;
@@ -46,7 +46,7 @@ function submitLoginForm() {
                     console.log(access_token);
 
                     // Fetch user data using the access token
-                    const userUrl = 'https://oneplacesolution.in/api/user';
+                    const userUrl = 'https://api.oneplacesolution.in/api/user';
 
                     // Set up headers with the access token
                     const userHeaders = new Headers();
@@ -83,7 +83,7 @@ function submitLoginForm() {
 
 
 function updateUserStatus(userId, selectedStatus) {
-    const updateStatusUrl = `https://oneplacesolution.in/api/user/update/${userId}`;
+    const updateStatusUrl = `https://api.oneplacesolution.in/api/user/update/${userId}`;
 
     const updateStatusHeaders = new Headers();
     updateStatusHeaders.append("Content-Type", "application/json");
@@ -109,7 +109,7 @@ function updateUserStatus(userId, selectedStatus) {
 }
 
 function deleteUser(userId) {
-    const deleteStatusUrl = `https://oneplacesolution.in/api/user/delete/${userId}`;
+    const deleteStatusUrl = `https://api.oneplacesolution.in/api/user/delete/${userId}`;
     console.log(deleteStatusUrl);
     const deleteStatusHeaders = new Headers();
     deleteStatusHeaders.append("Content-Type", "application/json");
@@ -227,7 +227,7 @@ function displayUserData(userData) {
 
 function signOut() {
     // Make the API call to sign out
-    fetch('https://oneplacesolution.in/api/auth/signout', {
+    fetch('https://api.oneplacesolution.in/api/auth/signout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -250,7 +250,7 @@ document.getElementById('logoutLink').addEventListener('click', function(event) 
 
 
 function viewListings(userId) {
-    const viewListingsUrl = `https://oneplacesolution.in/api/user/listings/${userId}`;
+    const viewListingsUrl = `https://api.oneplacesolution.in/api/user/listings/${userId}`;
 
     const viewListingsHeaders = new Headers();
     viewListingsHeaders.append("Authorization", `Bearer ${access_token}`);
