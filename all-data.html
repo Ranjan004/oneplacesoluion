@@ -45,7 +45,7 @@
         let listingsArray = [];
 
         function deleteUser(userId) {
-            const deleteStatusUrl = `https://oneplacesolution.in/api/listing/delete/${userId}`;
+            const deleteStatusUrl = `https://api.oneplacesolution.in/api/listing/delete/${userId}`;
             const deleteStatusHeaders = new Headers();
             deleteStatusHeaders.append("Content-Type", "application/json");
             deleteStatusHeaders.append("Authorization", `Bearer ${access_token}`);
